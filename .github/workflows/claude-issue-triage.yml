@@ -62,5 +62,10 @@ jobs:
                  todavía (este comentario servirá de base para el trabajo de código
                  posterior).
 
+               El comentario debe estar escrito en formato Markdown válido y bien
+               interpretable por GitHub (encabezados con `#`/`##`, listas con `-`,
+               texto en negrita con `**...**`, y fragmentos de código o nombres de
+               funciones/archivos entre backticks, p. ej. `game.js`, `collide()`).
+
             No hagas cambios de código ni abras pull requests en este workflow: tu única
             salida son los labels, el título (si aplica) y el comentario de diagnóstico.
