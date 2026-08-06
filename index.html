@@ -34,6 +34,16 @@
           <canvas id="next-canvas" width="120" height="120"></canvas>
         </div>
 
+        <div class="panel-section records-section">
+          <span class="label">RECORDS</span>
+          <ol class="records-list" id="records-list-panel"></ol>
+          <div class="records-stats">
+            <span>Mejor combo: <strong id="best-combo-panel">0</strong></span>
+            <span>Máx. líneas: <strong id="max-lines-panel">0</strong></span>
+          </div>
+          <button id="reset-records-btn" class="reset-records-btn">Resetear records</button>
+        </div>
+
         <div class="panel-section controls">
           <span class="label">CONTROLS</span>
           <ul>
@@ -51,6 +61,23 @@
       <div class="overlay-box">
         <p id="overlay-title">GAME OVER</p>
         <p id="overlay-score"></p>
+
+        <div id="name-entry" class="name-entry hidden">
+          <p class="name-entry-label">¡Nueva puntuación en el top 5!</p>
+          <input id="name-input" type="text" maxlength="12" placeholder="Tu nombre" autocomplete="off" />
+          <button id="save-score-btn">Guardar</button>
+        </div>
+
+        <div id="overlay-records-section" class="records-section overlay-records hidden">
+          <span class="label">TOP 5</span>
+          <ol class="records-list" id="records-list-overlay"></ol>
+          <div class="records-stats">
+            <span>Mejor combo: <strong id="best-combo-overlay">0</strong></span>
+            <span>Máx. líneas: <strong id="max-lines-overlay">0</strong></span>
+          </div>
+          <button id="reset-records-btn-overlay" class="reset-records-btn">Resetear records</button>
+        </div>
+
         <button id="restart-btn">Reiniciar</button>
       </div>
     </div>
