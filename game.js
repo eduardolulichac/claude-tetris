@@ -29,6 +29,9 @@ const PIECES = [
 const LINE_SCORES = [0, 100, 300, 500, 800];
 
 const THEME_KEY = 'tetris-theme';
+const START_LEVEL_KEY = 'tetris-start-level';
+const MIN_LEVEL = 1;
+const MAX_LEVEL = 15;
 const GRID_COLORS = { dark: '#22222e', light: '#dcdce8' };
 
 const canvas = document.getElementById('board');
@@ -43,8 +46,14 @@ const overlayTitle = document.getElementById('overlay-title');
 const overlayScore = document.getElementById('overlay-score');
 const restartBtn = document.getElementById('restart-btn');
 const themeToggleBtn = document.getElementById('theme-toggle');
+const pauseMenu = document.getElementById('pause-menu');
+const resumeBtn = document.getElementById('resume-btn');
+const pauseRestartBtn = document.getElementById('pause-restart-btn');
+const controlsToggleBtn = document.getElementById('controls-toggle-btn');
+const controlsPanel = document.getElementById('controls-panel');
+const levelSelect = document.getElementById('level-select');
 
-let board, current, next, score, lines, level, paused, gameOver, lastTime, dropAccum, dropInterval, animId;
+let board, current, next, score, lines, level, startLevel, paused, gameOver, lastTime, dropAccum, dropInterval, animId;
 let theme = 'dark';
 
 function createBoard() {
@@ -111,10 +120,14 @@ function clearLines() {
   if (cleared) {
     lines += cleared;
     score += (LINE_SCORES[cleared] || 0) * level;
-    level = Math.floor(lines / 10) + 1;
-    dropInterval = Math.max(100, 1000 - (level - 1) * 90);
+    level = startLevel + Math.floor(lines / 10);
+    dropInterval = dropIntervalForLevel(level);
     updateHUD();
   }
+}
+
+function dropIntervalForLevel(lvl) {
+  return Math.max(100, 1000 - (lvl - 1) * 90);
 }
 
 function ghostY() {
@@ -226,23 +239,52 @@ function drawNext() {
 function endGame() {
   gameOver = true;
   cancelAnimationFrame(animId);
+  pauseMenu.classList.add('hidden');
+  restartBtn.classList.remove('hidden');
   overlayTitle.textContent = 'GAME OVER';
   overlayScore.textContent = `Puntuación: ${score.toLocaleString()}`;
   overlay.classList.remove('hidden');
+}
+
+function showPauseMenu() {
+  overlayTitle.textContent = 'PAUSA';
+  overlayScore.textContent = '';
+  restartBtn.classList.add('hidden');
+  controlsPanel.classList.add('hidden');
+  controlsToggleBtn.textContent = 'Ver controles';
+  syncLevelSelect();
+  pauseMenu.classList.remove('hidden');
+  overlay.classList.remove('hidden');
+}
+
+function hidePauseMenu() {
+  pauseMenu.classList.add('hidden');
+  restartBtn.classList.remove('hidden');
+  overlay.classList.add('hidden');
 }
 
 function togglePause() {
   if (gameOver) return;
   paused = !paused;
   if (!paused) {
+    hidePauseMenu();
     lastTime = performance.now();
     loop(lastTime);
   } else {
     cancelAnimationFrame(animId);
-    overlayTitle.textContent = 'PAUSA';
-    overlayScore.textContent = '';
-    overlay.classList.remove('hidden');
+    showPauseMenu();
   }
+}
+
+function resumeGame() {
+  if (!paused || gameOver) return;
+  togglePause();
+}
+
+function toggleControlsPanel() {
+  const willShow = controlsPanel.classList.contains('hidden');
+  controlsPanel.classList.toggle('hidden', !willShow);
+  controlsToggleBtn.textContent = willShow ? 'Ocultar controles' : 'Ver controles';
 }
 
 function loop(ts) {
@@ -277,14 +319,42 @@ function toggleTheme() {
   applyTheme(newTheme);
 }
 
+function getStartLevel() {
+  const saved = parseInt(localStorage.getItem(START_LEVEL_KEY), 10);
+  if (Number.isInteger(saved) && saved >= MIN_LEVEL && saved <= MAX_LEVEL) return saved;
+  return MIN_LEVEL;
+}
+
+function setupLevelSelect() {
+  for (let lvl = MIN_LEVEL; lvl <= MAX_LEVEL; lvl++) {
+    const opt = document.createElement('option');
+    opt.value = lvl;
+    opt.textContent = lvl;
+    levelSelect.appendChild(opt);
+  }
+  syncLevelSelect();
+}
+
+function syncLevelSelect() {
+  levelSelect.value = getStartLevel();
+}
+
+function onLevelSelectChange() {
+  const chosen = parseInt(levelSelect.value, 10);
+  if (Number.isInteger(chosen) && chosen >= MIN_LEVEL && chosen <= MAX_LEVEL) {
+    localStorage.setItem(START_LEVEL_KEY, chosen);
+  }
+}
+
 function init() {
   board = createBoard();
   score = 0;
   lines = 0;
-  level = 1;
+  startLevel = getStartLevel();
+  level = startLevel;
   paused = false;
   gameOver = false;
-  dropInterval = 1000;
+  dropInterval = dropIntervalForLevel(level);
   dropAccum = 0;
   lastTime = performance.now();
   next = randomPiece();
@@ -296,7 +366,8 @@ function init() {
 }
 
 document.addEventListener('keydown', e => {
-  if (e.code === 'KeyP') { togglePause(); return; }
+  if (e.code === 'KeyP' || e.code === 'Escape') { togglePause(); return; }
+  if (e.code === 'Space') e.preventDefault();
   if (paused || gameOver) return;
   switch (e.code) {
     case 'ArrowLeft':
@@ -313,7 +384,6 @@ document.addEventListener('keydown', e => {
       tryRotate();
       break;
     case 'Space':
-      e.preventDefault();
       hardDrop();
       break;
   }
@@ -322,6 +392,11 @@ document.addEventListener('keydown', e => {
 
 restartBtn.addEventListener('click', init);
 themeToggleBtn.addEventListener('click', toggleTheme);
+resumeBtn.addEventListener('click', resumeGame);
+pauseRestartBtn.addEventListener('click', init);
+controlsToggleBtn.addEventListener('click', toggleControlsPanel);
+levelSelect.addEventListener('change', onLevelSelectChange);
 
 applyTheme(localStorage.getItem(THEME_KEY) === 'light' ? 'light' : 'dark');
+setupLevelSelect();
 init();
