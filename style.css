@@ -19,6 +19,9 @@
   --btn-hover: #9bbdff;
   --toggle-bg: #22223a;
   --toggle-border: #3a3a5a;
+  --highlight-bg: rgba(122, 162, 247, 0.18);
+  --danger-color: #e57373;
+  --danger-hover-bg: rgba(229, 115, 115, 0.12);
 }
 
 body.light-theme {
@@ -42,6 +45,9 @@ body.light-theme {
   --btn-hover: #5a7ae0;
   --toggle-bg: #e6e6f0;
   --toggle-border: #c9c9d9;
+  --highlight-bg: rgba(58, 91, 199, 0.14);
+  --danger-color: #c0392b;
+  --danger-hover-bg: rgba(192, 57, 43, 0.1);
 }
 
 *, *::before, *::after {
@@ -152,6 +158,142 @@ body {
   border-radius: 4px;
 }
 
+/* ---- Records ---- */
+.records-section {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.records-list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.records-row {
+  display: grid;
+  grid-template-columns: 16px 1fr auto;
+  gap: 6px;
+  align-items: center;
+  font-size: 12px;
+  padding: 2px 4px;
+  border-radius: 4px;
+  color: var(--text);
+}
+
+.records-row.highlight {
+  background: var(--highlight-bg);
+  font-weight: 700;
+}
+
+.records-row .rank {
+  color: var(--label-color);
+  font-size: 11px;
+}
+
+.records-row .rec-name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.records-row .rec-score {
+  font-family: 'Courier New', Courier, monospace;
+  color: var(--value-color);
+  text-align: right;
+}
+
+.records-empty {
+  font-size: 12px;
+  color: var(--label-color);
+  font-style: italic;
+}
+
+.records-stats {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  font-size: 11px;
+  color: var(--controls-color);
+}
+
+.records-stats strong {
+  color: var(--value-color);
+}
+
+.reset-records-btn {
+  background: transparent;
+  color: var(--danger-color);
+  border: 1px solid var(--danger-color);
+  border-radius: 6px;
+  padding: 6px 10px;
+  font-size: 11px;
+  font-weight: 600;
+  cursor: pointer;
+  letter-spacing: 0.5px;
+  transition: background 0.15s;
+}
+
+.reset-records-btn:hover {
+  background: var(--danger-hover-bg);
+}
+
+.overlay-records {
+  width: 220px;
+  max-width: 80vw;
+}
+
+/* ---- Entrada de nombre (nuevo récord) ---- */
+.name-entry {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  align-items: center;
+  width: 220px;
+  max-width: 80vw;
+}
+
+.name-entry-label {
+  font-size: 13px;
+  color: var(--overlay-score-color);
+  font-weight: 600;
+}
+
+#name-input {
+  width: 100%;
+  background: var(--kbd-bg);
+  border: 1px solid var(--kbd-border);
+  border-radius: 6px;
+  padding: 8px 10px;
+  font-size: 14px;
+  color: var(--text);
+  text-align: center;
+}
+
+#name-input:focus {
+  outline: none;
+  border-color: var(--btn-bg);
+}
+
+#save-score-btn {
+  background: var(--btn-bg);
+  color: var(--btn-color);
+  border: none;
+  border-radius: 6px;
+  padding: 8px 20px;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  letter-spacing: 1px;
+  transition: background 0.15s;
+}
+
+#save-score-btn:hover {
+  background: var(--btn-hover);
+}
+
 /* ---- Controles ---- */
 .controls ul {
   list-style: none;
@@ -190,7 +332,7 @@ kbd {
   border-radius: 4px;
 }
 
-.overlay.hidden {
+.hidden {
   display: none;
 }
 
